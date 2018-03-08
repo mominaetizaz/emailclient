@@ -6,7 +6,7 @@ const axios = require('axios');
 
 //this is the official sendgrid node plugin to use their api
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+sgMail.setApiKey('SEND_GRID_API_KEY');
 
 const app = express();
 app.use(morgan('combined'));
@@ -34,7 +34,7 @@ app.post('/sendEmail', (req, res) => {
                 url: 'https://api.mailgun.net/v3/sandbox171bb31efeaf4e2db87f13c9db671e61.mailgun.org/messages',
                 auth: {
                     username: 'api',
-                    password: 'key-ed95e1f04dc91f075e8c41fb6bceb8ff'
+                    password: 'MAIL_GUN_API_KEY'
                 },
                 params: msg
             }).then((body) => {
