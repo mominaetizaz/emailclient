@@ -17,7 +17,7 @@
         </md-field>
 
         <div class="md-layout">
-          <md-switch id="showCC" class="md-primary md-layout-item md-size-10" v-model="ccFlag">CC</md-switch>
+          <md-switch id="showCC" class="md-primary md-layout-item md-xsmall-size-20 md-medium-size-15" v-model="ccFlag">CC</md-switch>
           <md-switch id="showBCC" class="md-primary md-layout-item" v-model="bccFlag">BCC</md-switch>
 
         </div>
