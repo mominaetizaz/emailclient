@@ -21,22 +21,29 @@ app.post('/sendEmail', (req, res) => {
     };
     
     //validate email message and send feedback if not valid
-    
-    //1st try sending the email via Sendgrid
-    return sendGrid.sendEmail(msg)
-        .then(() => {
-            res.send('success');
-         })
-        .catch((err) => {
-            //if we errored then make a 2nd try via failover provider
-            return mailGun.sendEmail(msg)
-                .then(() => {
-                    res.send('success');
-                })
-                .catch((err) => {
-                    res.send('error');
-                });
-        });
+    if (validateEmail(msg)) {
+        //1st try sending the email via Sendgrid
+        return sendGrid.sendEmail(msg)
+            .then(() => {
+                res.send('success');
+             })
+            .catch((err) => {
+                //if we errored then make a 2nd try via failover provider
+                return mailGun.sendEmail(msg)
+                    .then(() => {
+                        res.send('success');
+                    })
+                    .catch((err) => {
+                        res.send('error');
+                    });
+            });
+    } else {
+        res.send('error');
+    }
 });
+
+validateEmail(message) {
+    return true;
+}
 
 app.listen(process.env.PORT || 8081);
