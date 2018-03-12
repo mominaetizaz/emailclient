@@ -1,0 +1,43 @@
+'use strict'
+
+const validator = require("email-validator");
+
+class EmailValidator {
+    validateEmail(message) {
+        if (!message.to || !message.subject || !message.text) {
+            //1 or all the required fields are missing
+            return false;
+        } else {
+            if (message.to) {
+                //if to emails exist check if all are valid
+                message.to.forEach(function (toEmail) {
+                   if (!validator.validate(toEmail)) {
+                       return false;
+                   }
+                });
+            }
+
+            if (message.cc) {
+                //if CC emails exist check if all are valid
+                message.cc.forEach(function (ccEmail) {
+                    if (!validator.validate(ccEmail)) {
+                        return false;
+                    }
+                });
+            }
+
+            if (message.bcc) {
+                //if BCC emails exist check if all are valid
+                message.bcc.forEach(function (bccEmail) {
+                    if (!validator.validate(bccEmail)) {
+                        return false;
+                    }
+                });
+            }
+        }
+
+        return true;
+    }
+}
+
+module.exports = EmailValidator;
