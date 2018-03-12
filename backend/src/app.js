@@ -2,11 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
-const axios = require('axios');
-
-//this is the official sendgrid node plugin to use their api
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('SEND_GRID_API_KEY');
+const sendGrid = require('./emailProvider/SendGrid');
+const mailGun = require('./emailProvider/MailGun');
 
 const app = express();
 app.use(morgan('combined'));
@@ -22,31 +19,24 @@ app.post('/sendEmail', (req, res) => {
         subject: req.body.subject,
         text: req.body.body,
     };
-
-    return sgMail.send(msg, (error, result) => {
-        if (error) {
-            msg.to.join(',');
-            msg.cc.join(',');
-            msg.bcc.join(',');
-
-            return axios({
-                method: 'post',
-                url: 'https://api.mailgun.net/v3/sandbox171bb31efeaf4e2db87f13c9db671e61.mailgun.org/messages',
-                auth: {
-                    username: 'api',
-                    password: 'MAIL_GUN_API_KEY'
-                },
-                params: msg
-            }).then((body) => {
-                res.send('success');
-            }).catch((err) => {
-                res.send('error');
-            });
-        } else {
+    
+    //validate email message and send feedback if not valid
+    
+    //1st try sending the email via Sendgrid
+    return sendGrid.sendEmail(msg)
+        .then(() => {
             res.send('success');
-        }
-    });
-
+         })
+        .catch((err) => {
+            //if we errored then make a 2nd try via failover provider
+            return mailGun.sendEmail(msg)
+                .then(() => {
+                    res.send('success');
+                })
+                .catch((err) => {
+                    res.send('error');
+                });
+        });
 });
 
 app.listen(process.env.PORT || 8081);
