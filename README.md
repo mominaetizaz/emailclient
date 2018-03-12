@@ -39,6 +39,9 @@ git clone https://github.com/mominaetizaz/emailclient/backend
 # install dependencies
 npm install
 
+# set environment variables
+set values for SENDGRID_KEY and MAILGUN_KEY so that they can be injected into the code to be used of authentication
+
 # serve at localhost:8081
 npm start
 ```
