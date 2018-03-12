@@ -70,6 +70,10 @@ export default {
           this.emailSent = false;
           this.sending = false;
           this.errorMessage = 'Error occurred while sending email. Please try again!';
+          
+          if (response.data === 'validation error') {
+              this.errorMessage = 'Error occurred, please make sure your inputs are valid';
+          }
         }
       }).catch((err) => {
         this.emailSent = false;
