@@ -2,8 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
-const sendGrid = require('./emailProvider/SendGrid');
-const mailGun = require('./emailProvider/MailGun');
+const SendGrid = require('./emailProvider/SendGrid');
+const MailGun = require('./emailProvider/MailGun');
+const EmailValidator = require('./validator/EmailValidator');
+
+const sendGrid = new SendGrid();
+const mailGun = new MailGun();
+const emailValidator = new EmailValidator();
 
 const app = express();
 app.use(morgan('combined'));
@@ -21,7 +26,7 @@ app.post('/sendEmail', (req, res) => {
     };
     
     //validate email message and send feedback if not valid
-    if (validateEmail(msg)) {
+    if (emailValidator.validateEmail(msg)) {
         //1st try sending the email via Sendgrid
         return sendGrid.sendEmail(msg)
             .then(() => {
@@ -34,16 +39,12 @@ app.post('/sendEmail', (req, res) => {
                         res.send('success');
                     })
                     .catch((err) => {
-                        res.send('error');
+                        res.status(500).send('error');
                     });
             });
     } else {
-        res.send('error');
+        res.send('validation error');
     }
 });
-
-validateEmail(message) {
-    return true;
-}
 
 app.listen(process.env.PORT || 8081);
